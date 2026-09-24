@@ -364,6 +364,13 @@ function toDshMessage(
 ) {
   const content = [{ type: "text" as const, text: message.content }];
   if (message.role === "user") {
+    // No `form:` here on purpose. DSH 0.1.7 `ContextForm` is a closed
+    // vocabulary (instructions/catalog/snapshot/notice/relay/recall) meant
+    // for session-context messages; `form?: never` is a documented valid
+    // variant. These are auxiliary host-LLM calls with sessionId deliberately
+    // omitted (see createGenerateOptions), so no ContextForm value applies —
+    // the recall message in index.ts is the one that legitimately carries
+    // `form: "recall"`.
     return createUserMessage({
       content,
       source: { kind: `plugin:${HOST_LLM_MESSAGE_SOURCE}` },
